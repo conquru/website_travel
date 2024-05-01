@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Поиск</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.city_start.label }}<br>
+            {{ form.city_start(class="form-control") }}<br>
+            {% for error in form.city_start.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.city_end.label }}<br>
+            {{ form.city_end(class="form-control") }}<br>
+            {% for error in form.city_end.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.time.label }}<br>
+            {{ form.time(class="form-control") }}<br>
+            {% for error in form.time.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit(type="submit", class="btn btn-search") }}</p>
+        <div>{{ message }}</div>
+    </form>  
+    {% if flag == 1 %} 
+        <h5>History</h5>
+        <table class="table">
+        <thead class="table-secondary">
+        <tr>
+            <th scope="col">Plane tickets</th>
+            <th scope="col">Hotels</th>
+            <th scope="col">entertainments</th>
+        </tr>
+        <tbody class="table-primary">
+        <tr>
+            <td>{{tickets}}</td>
+            <td>{{hotel}}</td>
+            <td>{{enter}}</td>
+        </tr>
+        </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import time
 
 
-def get_hotel(end):
+def GetHotel(end):
     driver = webdriver.Chrome()
     driver.get('https://sletat.ru/hotels/russia/')
 

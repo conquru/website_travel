@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import time
 
 
-def get_entert(city):
+def GetEntertainments(city):
     driver = webdriver.Chrome()
     # driver.set_window_position(-10000,0)
     driver.get("https://passport.yandex.ru/auth/list?origin=afisha&retpath=https%3A%2F%2Fafisha.yandex.ru%2Fmoscow")

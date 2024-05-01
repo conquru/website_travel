@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+    <h5>History</h5>
+
+    {% for j in jobs%}
+            <h3>Action # {{ loop.index}}</h3>
+            <div class="table-responsive-sm">
+      <table class="table">
+      <thead class="table-secondary">
+        <tr>
+          <th scope="col">City start</th>
+          <th scope="col">City end</th>
+          <th scope="col">Date</th>
+          <th scope="col">Plane tickets</th>
+          <th scope="col">Hotels</th>
+          <th scope="col">entertainments</th>
+        </tr>
+      <tbody class="table-primary">
+        <tr>
+          <td>{{j.city_start}}</td>
+          <td>{{j.city_end}}</td>
+          <td>{{j.date}}</td>
+          <td>{{j.tickets}}</td>
+          <td>{{j.hotel}}</td>
+          <td>{{j.enter}}</td>
+        </tr>
+      </tbody>
+      </table>
+    {% endfor %}
+{% endblock %}

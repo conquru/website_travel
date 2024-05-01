@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 import time
 
-def get_tickets(start, end, time_data):
+def GetTickets(start, end, time_data):
     driver = webdriver.Chrome()
     driver.get("https://www.tutu.ru/")
     driver.find_element(By.NAME, "city_from").send_keys(start)
