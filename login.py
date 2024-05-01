@@ -10,6 +10,7 @@ from forms.searchform import SearchForm
 from functions.entertainments import GetEntertainments
 from functions.plane import GetTickets
 from functions.hotel import GetHotel
+import time
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '9vTgySlnihdzBGrf'
@@ -34,14 +35,14 @@ def logout():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     global name
-    if current_user.is_authenticated:
-        return redirect('/result')
+    # if current_user.is_authenticated:
+    #     return redirect('/result')
     form = LoginForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.email == form.email.data).first()
         if user and user.check_password(form.password.data):
-            login_user(user, remember=form.remember_me.data)
+            # login_user(user, remember=form.remember_me.data)
             name = User.email
             return redirect("/result")
         return render_template('login.html',
@@ -54,11 +55,43 @@ def login():
 def search():
     global name
     form = SearchForm()
+    
     if form.validate_on_submit():
-        list_tickets = ' '.join(GetTickets(form.city_start.data, form.city_end.data, form.time.data))
-        list_entrers = ' '.join(GetEntertainments(form.city_end.data))
-        list_hotel = ' '.join(GetHotel(form.city_end.data))
         db_sess = db_session.create_session()
+
+        tickets = GetTickets(form.city_start.data, form.city_end.data, form.time.data)
+        if tickets == []:
+            time.sleep(2)
+            tickets = GetTickets(form.city_start.data, form.city_end.data, form.time.data)
+            if tickets == []:
+                list_tickets = 'Мы не смогли найти нужные билеты, можете обратится в службу поддержкии(которой нет)'
+            else:
+                list_tickets = ' '.join(tickets)
+        else:
+            list_tickets = ' '.join(tickets)
+        
+        entrers = GetEntertainments(form.city_end.data)
+        if entrers == []:
+            time.sleep(2)
+            entrers = GetEntertainments(form.city_end.data)
+            if entrers == []:
+                list_entrers = 'Мы не смогли найти нужную информацию, можете обратится в службу поддержкии(которой нет)'
+            else:
+                list_entrers = ' '.join(entrers)
+        else:
+            list_entrers = ' '.join(entrers)
+
+        hotel = GetHotel(form.city_end.data)
+        if hotel == []:
+            time.sleep(2)
+            hotel = GetHotel(form.city_end.data)
+            if hotel == []:
+                list_hotel = 'Мы не смогли найти нужную информацию, можете обратится в службу поддержкии(которой нет)'
+            else:
+                list_hotel = ' '.join(hotel)
+        else:
+            list_hotel = ' '.join(hotel)
+
         history = History(
             tickets=list_tickets,
             enter=list_entrers,

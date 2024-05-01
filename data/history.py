@@ -4,7 +4,7 @@ from sqlalchemy import orm
 
 
 class History(db_session.SqlAlchemyBase):
-    __tablename__ = 'history'
+    __tablename__ = 'History'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
