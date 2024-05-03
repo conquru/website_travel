@@ -4,7 +4,7 @@ from data import db_session
 from data.users import User
 from data.history import History
 from forms.loginform import LoginForm
-from forms.job import JobsForm
+from forms.history import JobsForm
 from forms.registerform import RegisterForm
 from forms.searchform import SearchForm
 from functions.entertainments import GetEntertainments
@@ -17,7 +17,6 @@ app.config['SECRET_KEY'] = '9vTgySlnihdzBGrf'
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-name = ''
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -34,16 +33,14 @@ def logout():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    global name
-    # if current_user.is_authenticated:
-    #     return redirect('/result')
+    if current_user.is_authenticated:
+        return redirect('/search')
     form = LoginForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.email == form.email.data).first()
         if user and user.check_password(form.password.data):
-            # login_user(user, remember=form.remember_me.data)
-            name = User.email
+            login_user(user, remember=form.remember_me.data)
             return redirect("/result")
         return render_template('login.html',
                                message="Неправильный логин или пароль",
@@ -53,16 +50,20 @@ def login():
 
 @app.route('/result', methods=['GET', 'POST'])
 def search():
-    global name
     form = SearchForm()
     
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
-
-        tickets = GetTickets(form.city_start.data, form.city_end.data, form.time.data)
+        tickets = []
+        result = GetTickets(form.city_start.data, form.city_end.data, form.time.data)
+        for i in result:
+            tickets.append(' '.join(i))
+        print(tickets)
         if tickets == []:
             time.sleep(2)
-            tickets = GetTickets(form.city_start.data, form.city_end.data, form.time.data)
+            tickets = []
+            result = GetTickets(form.city_start.data, form.city_end.data, form.time.data)
+            for i in result:
+                tickets.append(' '.join(i))
             if tickets == []:
                 list_tickets = 'Мы не смогли найти нужные билеты, можете обратится в службу поддержкии(которой нет)'
             else:
@@ -70,10 +71,17 @@ def search():
         else:
             list_tickets = ' '.join(tickets)
         
-        entrers = GetEntertainments(form.city_end.data)
+        entrers = []
+        result = GetEntertainments(form.city_end.data)
+        for i in result:
+            entrers.append(' '.join(i))
+        print(entrers)
         if entrers == []:
             time.sleep(2)
-            entrers = GetEntertainments(form.city_end.data)
+            entrers = []
+            result = GetEntertainments(form.city_end.data)
+            for i in result:
+                entrers.append(' '.join(i))
             if entrers == []:
                 list_entrers = 'Мы не смогли найти нужную информацию, можете обратится в службу поддержкии(которой нет)'
             else:
@@ -81,10 +89,18 @@ def search():
         else:
             list_entrers = ' '.join(entrers)
 
-        hotel = GetHotel(form.city_end.data)
+        hotel = []
+        result = GetHotel(form.city_end.data)
+        for i in result:
+            hotel.append(' '.join(i))
+        print(hotel)
         if hotel == []:
             time.sleep(2)
-            hotel = GetHotel(form.city_end.data)
+            hotel = []
+            result = GetHotel(form.city_end.data)
+            for i in result:
+                hotel.append(' '.join(i))
+                hotel = GetHotel(form.city_end.data)
             if hotel == []:
                 list_hotel = 'Мы не смогли найти нужную информацию, можете обратится в службу поддержкии(которой нет)'
             else:
@@ -92,18 +108,19 @@ def search():
         else:
             list_hotel = ' '.join(hotel)
 
-        history = History(
-            tickets=list_tickets,
-            enter=list_entrers,
-            hotel=list_hotel,
-            city_start=form.city_start.data,
-            city_end=form.city_end.data,
-            date=form.time.data
-        ) 
+        db_sess = db_session.create_session()
+        history = History()
+        history.tickets = list_tickets
+        history.enter = list_entrers
+        history.hotel = list_hotel
+        history.city_start = form.city_start.data
+        history.city_end = form.city_end.data
+        history.date = form.time.data
+        # current_user.history.append(history)
         db_sess.add(history)
         db_sess.commit()
-        return render_template('search.html', flag=0, tickets=list_tickets, hotel=list_hotel, enter=list_entrers, form=form)
-    return render_template('search.html', flag=0, tickets='', hotel='', enter='', form=form)
+        return render_template('result.html', tickets=tickets, hotel=hotel, enter=entrers, form=form)
+    return render_template('search.html', form=form)
 
 @app.route('/history', methods=['GET', 'POST'])
 def result():
@@ -111,7 +128,7 @@ def result():
     query_history = db_sess.query(History)
     query = db_sess.query(User)
     for user in db_sess.query(User).all():
-        if user.email == current_user.name.data:
+        if user.name == current_user.name:
             user_id = user.id
     history = db_sess.query_history(History).filter(History.name == user_id)
 
@@ -119,72 +136,16 @@ def result():
 
 
 @app.route('/authorized', methods=['GET', 'POST'])
-def main():
-    db_sess = db_session.create_session()
-    query_history = db_sess.query(History)
-    query = db_sess.query(User)
-    for user in db_sess.query(User).all():
-        if user.email == current_user.name.data:
-            user_id = user.id
-    history = db_sess.query_history(History).filter(History.name == user_id)
-
-    return render_template('jobs.html', history=history)
-
-
-@app.route('/add_jobs', methods=['GET', 'POST'])
-@login_required
-def add_jobs():
-    form = JobsForm()
-    if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        jobs = Jobs()
-        jobs.job = form.job.data
-        jobs.team_leader = form.team_leader.data
-        jobs.work_size = form.work_size.data
-        jobs.collaborators = form.collaborators.data
-        jobs.is_finished = form.is_finished.data
-        current_user.jobs.append(jobs)
-        db_sess.merge(current_user)
-        db_sess.commit()
-        return redirect('/authorized')
-    return render_template('add_jobs.html', title='Постановка задачи',
-                           form=form)
-
-
-# @app.route('/add_jobs/<int:id>', methods=['GET', 'POST'])
-# @login_required
-# def edit_news(id):
-#     form = JobsForm()
-#     if request.method == "GET":
-#         db_sess = db_session.create_session()
-#         jobs = db_sess.query(Jobs).filter(Jobs.id == id,
-#                                           ).first()
-#         if jobs:
-#             form.job.data = jobs.job
-#             form.team_leader.data = jobs.team_leader
-#             form.work_size.data = jobs.work_size
-#             form.collaborators.data = jobs.collaborators
-#             form.is_finished.data = jobs.is_finished
-#         else:
-#             abort(404)
-#     if form.validate_on_submit():
-#         db_sess = db_session.create_session()
-#         jobs = db_sess.query(Jobs).filter(Jobs.id == id,
-#                                           ).first()
-#         if jobs:
-#             jobs.job = form.job.data
-#             jobs.team_leader = form.team_leader.data
-#             jobs.work_size = form.work_size.data
-#             jobs.collaborators = form.collaborators.data
-#             jobs.is_finished = form.is_finished.data
-#             db_sess.commit()
-#             return redirect('/authorized')
-#         else:
-#             abort(404)
-#     return render_template('add_jobs.html',
-#                            title='Редактирование задания',
-#                            form=form
-#                            )
+# def main():
+#     global name
+#     db_sess = db_session.create_session()
+#     query_history = db_sess.query(History)
+#     query = db_sess.query(User)
+#     for user in db_sess.query(User).all():
+#         if user.email == name:
+#             user_id = user.id
+#     history = db_sess.query_history(History).filter(History.name == user_id)
+#     return render_template('jobs.html', history=history)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -201,7 +162,8 @@ def reqister():
                                    form=form,
                                    message="Такой пользователь уже есть")
         user = User(
-            email=form.email.data,
+            name=form.name.data,
+            email=form.email.data
         )
         user.set_password(form.hashed_password.data)
         db_sess.add(user)
@@ -210,20 +172,6 @@ def reqister():
     return render_template('register.html', title='Регистрация', form=form)
 
 
-# @app.route('/jobs_delete/<int:id>', methods=['GET', 'POST'])
-# @login_required
-# def news_delete(id):
-#     db_sess = db_session.create_session()
-#     jobs = db_sess.query(Jobs).filter(Jobs.id == id,
-#                                       ).first()
-#     if jobs:
-#         db_sess.delete(jobs)
-#         db_sess.commit()
-#     else:
-#         abort(404)
-#     return redirect('/authorized')
-
-
 if __name__ == '__main__':
     db_session.global_init("db/blogs.db")
-    app.run(port=8080, host='127.0.0.1')
+    app.run(port=8000, host='127.0.0.1')
