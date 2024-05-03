@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>По вышему запросу найденно:</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <table class="table">
+            <thead class="table-secondary">
+            <tr>
+                <th scope="col">Plane tickets</th>
+                <th scope="col">Hotels</th>
+                <th scope="col">entertainments</th>
+            </tr>
+            <tbody class="table-primary">
+            <tr>
+                <td>
+                    {% for item in tickets%}
+                        <div>{{item}}</div>
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for item in hotel%}
+                        <div>{{item}}</div>
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for item in enter%}
+                        <div>{{item}}</div>
+                    {% endfor %}
+                </td>
+            </tr>
+            </tbody>
+            </table>
+    </form>  
+{% endblock %}
