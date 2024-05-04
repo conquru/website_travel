@@ -53,66 +53,66 @@ def search():
     form = SearchForm()
     
     if form.validate_on_submit():
-        # tickets = []
-        # result = GetTickets(form.city_start.data, form.city_end.data, form.time.data)
-        # for i in result:
-        #     tickets.append(' '.join(i))
-        # print(tickets)
-        # if tickets == []:
-        #     time.sleep(2)
-        #     tickets = []
-        #     result = GetTickets(form.city_start.data, form.city_end.data, form.time.data)
-        #     for i in result:
-        #         tickets.append(' '.join(i))
-        #     if tickets == []:
-        #         list_tickets = 'Мы не смогли найти нужные билеты, можете обратится в службу поддержкии(которой нет)'
-        #     else:
-        #         list_tickets = ' '.join(tickets)
-        # else:
-        #     list_tickets = ' '.join(tickets)
+        tickets = []
+        result = GetTickets(form.city_start.data, form.city_end.data, form.time.data)
+        for i in result:
+            tickets.append(' '.join(i))
+        print(tickets)
+        if tickets == []:
+            time.sleep(10)
+            tickets = []
+            result = GetTickets(form.city_start.data, form.city_end.data, form.time.data)
+            for i in result:
+                tickets.append(' '.join(i))
+            if tickets == []:
+                list_tickets = 'Мы не смогли найти нужные билеты, можете обратится в службу поддержкии(которой нет)'
+            else:
+                list_tickets = ' '.join(tickets)
+        else:
+            list_tickets = ' '.join(tickets)
         
-        # entrers = []
-        # result = GetEntertainments(form.city_end.data)
-        # for i in result:
-        #     entrers.append(' '.join(i))
-        # print(entrers)
-        # if entrers == []:
-        #     time.sleep(2)
-        #     entrers = []
-        #     result = GetEntertainments(form.city_end.data)
-        #     for i in result:
-        #         entrers.append(' '.join(i))
-        #     if entrers == []:
-        #         list_entrers = 'Мы не смогли найти нужную информацию, можете обратится в службу поддержкии(которой нет)'
-        #     else:
-        #         list_entrers = ' '.join(entrers)
-        # else:
-        #     list_entrers = ' '.join(entrers)
+        entrers = []
+        result = GetEntertainments(form.city_end.data)
+        for i in result:
+            entrers.append(' '.join(i))
+        print(entrers)
+        if entrers == []:
+            time.sleep(10)
+            entrers = []
+            result = GetEntertainments(form.city_end.data)
+            for i in result:
+                entrers.append(' '.join(i))
+            if entrers == []:
+                list_entrers = 'Мы не смогли найти нужную информацию, можете обратится в службу поддержкии(которой нет)'
+            else:
+                list_entrers = ' '.join(entrers)
+        else:
+            list_entrers = ' '.join(entrers)
 
-        # hotel = []
-        # result = GetHotel(form.city_end.data)
-        # for i in result:
-        #     hotel.append(' '.join(i))
-        # print(hotel)
-        # if hotel == []:
-        #     time.sleep(2)
-        #     hotel = []
-        #     result = GetHotel(form.city_end.data)
-        #     for i in result:
-        #         hotel.append(' '.join(i))
-        #         hotel = GetHotel(form.city_end.data)
-        #     if hotel == []:
-        #         list_hotel = 'Мы не смогли найти нужную информацию, можете обратится в службу поддержкии(которой нет)'
-        #     else:
-        #         list_hotel = ' '.join(hotel)
-        # else:
-        #     list_hotel = ' '.join(hotel)
-        tickets = ['test', 'test', 'test']
-        list_tickets = ' '.join(tickets)
-        hotel = ['test', 'test', 'test']
-        list_hotel = ' '.join(hotel)
-        entrers = ['test', 'test', 'test']
-        list_entrers = ' '.join(entrers)
+        hotel = []
+        result = GetHotel(form.city_end.data)
+        for i in result:
+            hotel.append(' '.join(i))
+        print(hotel)
+        if hotel == []:
+            time.sleep(10)
+            hotel = []
+            result = GetHotel(form.city_end.data)
+            for i in result:
+                hotel.append(' '.join(i))
+                hotel = GetHotel(form.city_end.data)
+            if hotel == []:
+                list_hotel = 'Мы не смогли найти нужную информацию, можете обратится в службу поддержкии(которой нет)'
+            else:
+                list_hotel = ' '.join(hotel)
+        else:
+            list_hotel = ' '.join(hotel)
+        # tickets = ['test', 'test', 'test']
+        # list_tickets = ' '.join(tickets)
+        # hotel = ['test', 'test', 'test']
+        # list_hotel = ' '.join(hotel)
+        # entrers = ['test', 'test', 'test']
+        # list_entrers = ' '.join(entrers)
         db_sess = db_session.create_session()
         user = User()
         now_user = db_sess.query(User).filter(User.name == current_user.name).first()
