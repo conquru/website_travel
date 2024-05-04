@@ -2,7 +2,7 @@
 {% block content %}
     <h5>History</h5>
 
-    {% for j in jobs%}
+    {% for j in history%}
             <h3>Action # {{ loop.index}}</h3>
             <div class="table-responsive-sm">
       <table class="table">
@@ -27,4 +27,5 @@
       </tbody>
       </table>
     {% endfor %}
+    <a class="btn btn-secondary" href="/result" >Назад</a>
 {% endblock %}
